@@ -1,11 +1,11 @@
-The Ampex (&X) library provides a Metavariable X that can be used in conjunction with the unary ampersand to create anonymous blocks in a slightly more readable way than the default. It was inspired by the clever `Symbol#to_proc` method which handles the most common case very elegantly, and discussion with Sam Stokes who created an earlier version.
+The Ampex (`&X`) library provides a Metavariable X that can be used in conjunction with the unary ampersand to create anonymous blocks in a slightly more readable way than the default. It was inspired by the clever `Symbol#to_proc` method which handles the most common case very elegantly, and discussion with Sam Stokes who created an earlier version.
 
-At its simplest, &X can be used as a drop-in replacement for `Symbol#to_proc`:
+At its simplest, `&X` can be used as a drop-in replacement for `Symbol#to_proc`:
 
     [1,2,3].map &X.to_s
       # => ["1", "2", "3"]
 
-However the real strength in the library comes from allowing you to call methods:
+However the real strength in the library comes from allowing you to call methods with arguments:
 
     [1,"2",3].select &X.is_a?(String)
       # => ["2"]
@@ -28,7 +28,7 @@ As an added bonus, the effect is transitive — you can chain method calls:
 
 There are two things to watch out for:
 
-Firstly, &X can only appear on the left:
+Firstly, `&X` can only appear on the left:
 
     [1, 2, 3].map &(X + 1)
       # => [2, 3, 4]
@@ -42,18 +42,19 @@ Firstly, &X can only appear on the left:
     [[1],[2]].map &[2].concat(X) # WRONG
       # => TypeError, "Metavariable#to_ary should return Array"
 
-Secondly, the arguments or operands will only be evaluated once, and not every time:
+Secondly, other arguments or operands will only be evaluated once, and not every time:
 
-   i = 0
-   [1, 2].map &(X + (i += 1)) # WRONG
-     # => [2, 3]
+    i = 0
+    [1, 2].map &(X + (i += 1)) # WRONG
+      # => [2, 3]
 
-   i = 0
-   [1, 2].map{ |x| x + (i += 1) }
-     # => [2, 4]
+    i = 0
+    [1, 2].map{ |x| x + (i += 1) }
+      # => [2, 4]
 
 
 For bug-fixes or enhancements, please contact the author: Conrad Irwin <conrad.irwin@gmail.com>
+
 For an up-to-date version, try http://github.com/rapportive-oss/ampex
 
 This library is copyrighted under the MIT license, see LICENSE.MIT for details.
