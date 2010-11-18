@@ -1,5 +1,8 @@
 The Ampex (`&X`) library provides a Metavariable X that can be used in conjunction with the unary ampersand to create anonymous blocks in a slightly more readable way than the default. It was inspired by the clever `Symbol#to_proc` method which handles the most common case very elegantly, and discussion with Sam Stokes who created an earlier version.
 
+Usage
+-----
+
 At its simplest, `&X` can be used as a drop-in replacement for `Symbol#to_proc`:
 
     [1,2,3].map &X.to_s
@@ -21,12 +24,18 @@ And, as everything in ruby is a method, create readable expressions without the 
     ["a", "b", "c"].map &(X * 2)
       # => ["aa", "bb", "cc"]
 
+    [{}].each &X[1] = 2
+      # => [{1 => 2}]
+
 As an added bonus, the effect is transitive — you can chain method calls:
 
     [1, 2, 3].map &X.to_f.to_s
       # => ["1.0", "2.0", "3.0"]
 
-There are two things to watch out for:
+Gotchas
+-------
+
+There are a few things to watch out for:
 
 Firstly, `&X` can only appear on the left:
 
@@ -52,6 +61,14 @@ Secondly, other arguments or operands will only be evaluated once, and not every
     [1, 2].map{ |x| x + (i += 1) }
       # => [2, 4]
 
+Bugs
+----
+
+If you create an assigning callable (e.g. `X[a] = b`, `X.a = b` ) without an immediate preceding `&`, then `b.class#to_proc` will return the assigning callable the first time, and only the first time, you call it. If you want to get access to an assigning callable that you've defined using `&X`, you must do: `lambda &X[a] = b` instead.
+
+
+Epilogue
+--------
 
 For bug-fixes or enhancements, please contact the author: Conrad Irwin <conrad.irwin@gmail.com>
 
