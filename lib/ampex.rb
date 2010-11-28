@@ -4,27 +4,32 @@ require 'blankslate'
 #
 # For detailed usage notes, please see README.markdown
 #
-class Metavariable < BlankSlate 
-  def initialize(parent=nil, &block)
-    @block = block
-    @parent = parent
+class Metavariable < BlankSlate
+
+  # When you pass an argument with & in ruby, you're actually calling #to_proc
+  # on the object. So it's Symbol#to_proc that makes the &:to_s trick work,
+  # and Metavariable#to_proc that makes &X work.
+  attr_reader :to_proc
+
+  def initialize(&block)
+    @to_proc = block || lambda{|x| x}
   end
 
+  # Each time a method is called on a Metavariable, we want to create a new
+  # Metavariable that is like the last but does something more.
+  #
+  # The end result of calling X.one.two will be like:
+  #
+  # lambda{|x|
+  #   (lambda{|x|
+  #     (lambda{|x| x}).call(x).one
+  #   }).call(x).two
+  # }
+  #
   def method_missing(name, *args, &block)
-    mv = Metavariable.new(self) { |x| x.send(name, *args, &block) }
+    mv = Metavariable.new { |x| @to_proc.call(x).send(name, *args, &block) }
     Metavariable.temporarily_monkeypatch(args.last.class, mv) if name.to_s =~ /=$/
     mv
-  end
-
-  def to_proc
-    lambda do |x|
-      if @block
-        x = @parent.to_proc.call(x) if @parent
-        @block.call x
-      else
-        x
-      end
-    end
   end
 
   private
