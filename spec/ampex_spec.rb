@@ -36,9 +36,11 @@ describe "&X" do
   it "should not be possible to intercept #to_proc" do
     b = Object.new
     def intercept(b)
-      b.respond_to? :to_proc
+      b.to_proc
+    rescue NoMethodError => e
+      e.class
     end
-    [{}].each(&X[intercept(b)] = b).should == [{false => b}]
+    [{}].each(&X[intercept(b)] = b).should == [{NoMethodError => b}]
   end
 
   it "should preserve existing #to_proc" do
