@@ -33,6 +33,11 @@ describe "&X" do
     [{}].map(&X['a'] = 1).first.should_not respond_to :to_proc
   end
 
+  it "should not leak #to_proc on comparison" do
+    [:a, :b, :c].map(&X == :to_i)
+    [1,2,3].map(&:to_i).should == [1,2,3]
+  end
+
   it "should not be possible to intercept #to_proc" do
     b = Object.new
     def intercept(b)

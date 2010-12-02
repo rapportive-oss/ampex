@@ -28,7 +28,7 @@ class Metavariable < BlankSlate
   #
   def method_missing(name, *args, &block)
     mv = Metavariable.new { |x| @to_proc.call(x).send(name, *args, &block) }
-    Metavariable.temporarily_monkeypatch(args.last.class, mv) if name.to_s =~ /=$/
+    Metavariable.temporarily_monkeypatch(args.last.class, mv) if name.to_s =~ /[^!=]=$/
     mv
   end
 
