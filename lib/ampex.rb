@@ -28,7 +28,7 @@ class Metavariable < BlankSlate
   #
   def method_missing(name, *args, &block)
     mv = Metavariable.new { |x| @to_proc.call(x).send(name, *args, &block) }
-    Metavariable.temporarily_monkeypatch(args.last.class, mv) if name.to_s =~ /[^!=<>]=$/
+    Metavariable.temporarily_monkeypatch(args.last, :to_proc) { mv.to_proc } if name.to_s =~ /[^!=<>]=$/
     mv
   end
 
@@ -49,26 +49,57 @@ class Metavariable < BlankSlate
   #  :two.to_proc  _/  and  un-patch here
   #  ary.map &_
   #
-  # There is a risk if someone uses an amp-less X, and assigns something with to_proc
-  # (most likely a symbol), and then uses .map(&:to_i), as &:to_i will return the
-  # behaviour of their metavariable.
+  # We go to some lengths to ensure that, providing the & and the X are adjacent,
+  # it's not possible to get different behaviour in the rest of the program; despite
+  # the temporary mutation of potentially global state.
   #
-  # There are other things that might notice us doing this, if people are listening
-  # on various method_added hooks, or have overridden class_eval, etc. But I'm not
-  # too worried.
+  # We can't really do anything if the & has been split from the X, consider:
   #
-  def self.temporarily_monkeypatch(klass, mv)
-    klass.class_eval do
+  #   assigner = (X[0] = :to_i)
+  #   assigner == :to_i
+  #     # => true
+  #   [1,2,3].map(&:to_i)
+  #     # => NoMethodError: undefined method `[]=' for 1:Fixnum
+  #
+  # Just strongly encourage use of:
+  #   assigner = lambda &X = :to_i
+  #   assigner == :to_i
+  #     # => false
+  #   [1,2,3].map(&:to_i)
+  #     # => [1,2,3]
+  #
+  def self.temporarily_monkeypatch(instance, method_name, &block)
 
-      alias_method(:to_proc_without_metavariable, :to_proc) rescue nil
-      define_method(:to_proc) do
-        klass.class_eval do
+    Thread.exclusive do
+      @monkey_patch_count = @monkey_patch_count ? @monkey_patch_count + 1 : 0
+      stashed_method_name = :"#{method_name}_without_metavariable_#{@monkey_patch_count}"
+      thread = Thread.current
 
-          undef :to_proc
-          alias_method(:to_proc, :to_proc_without_metavariable) rescue nil
-          undef :to_proc_without_metavariable rescue nil
+      # Try to get a handle on the object's singleton class, but fall back to using
+      # its actual class where that is not possible (i.e. for numbers and symbols)
+      klass = (class << instance; self; end) rescue instance.class
+      klass.class_eval do
 
-          mv.to_proc
+        alias_method(stashed_method_name, method_name) rescue nil
+        define_method(method_name) do
+
+          todo = block
+
+          Thread.exclusive do
+            if self.equal?(instance) && thread.equal?(Thread.current)
+
+              klass.class_eval do
+                undef_method(method_name)
+                alias_method(method_name, stashed_method_name) rescue nil
+                undef_method(stashed_method_name) rescue nil
+              end
+
+            else
+              todo = method(stashed_method_name)
+            end
+          end
+
+          todo.call
         end
       end
     end

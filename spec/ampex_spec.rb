@@ -48,8 +48,27 @@ describe "&X" do
     [{}].each(&X[intercept(b)] = b).should == [{NoMethodError => b}]
   end
 
+  it "should not be possible to intercept #to_proc in an interrupting thread" do
+    X[0] = :inspect
+    b = []
+    Thread.new { b << [1,2,3].map(&:inspect) }.join
+    b.should == [["1","2", "3"]]
+    [].map(&:inspect)
+  end
+
   it "should preserve existing #to_proc" do
     [{}].each(&X[:to_a] = :to_a).map(&:to_a).should == [[[:to_a, :to_a]]]
+  end
+
+  it "should preserve existing #to_proc in an object's singleton class" do
+    a = Object.new
+    class << a
+      def to_proc; lambda { 3 }; end
+    end
+
+    [1].map(&a).should == [3]
+    [{1 => 2}].each(&X[1] = 3).should == [{1 => 3}]
+    [1].map(&a).should == [3]
   end
 
   it "should only evaluate arguments once" do
@@ -80,6 +99,12 @@ describe "&X" do
 
     mehier = assigner(1, :inspect)
     [{}].map(&:inspect).should == ["{}"]
+  end
+
+  it "should not be perturbed by an ampless X" do
+    X[0] = 1
+    [{1 => 2}].each(&X[1] = 3).should == [{1 => 3}]
+    [].map(&1)
   end
 
 end
