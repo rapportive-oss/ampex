@@ -58,19 +58,17 @@ class Metavariable < BlankSlate
   # too worried.
   #
   def self.temporarily_monkeypatch(klass, mv)
-    klass.send :class_variable_set, :'@@metavariable', mv
     klass.class_eval do
 
       alias_method(:to_proc_without_metavariable, :to_proc) rescue nil
-      def to_proc
-        self.class.class_eval do
+      define_method(:to_proc) do
+        klass.class_eval do
 
-          undef to_proc
+          undef :to_proc
           alias_method(:to_proc, :to_proc_without_metavariable) rescue nil
-          undef to_proc_without_metavariable rescue nil
+          undef :to_proc_without_metavariable rescue nil
 
-          # Remove the metavariable from the class and return its proc
-          remove_class_variable(:'@@metavariable').to_proc
+          mv.to_proc
         end
       end
     end
