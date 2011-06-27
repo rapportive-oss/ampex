@@ -63,7 +63,7 @@ describe "&X" do
   it "should preserve existing #to_proc in an object's singleton class" do
     a = Object.new
     class << a
-      def to_proc; lambda { 3 }; end
+      def to_proc; lambda { |x| 3 }; end
     end
 
     [1].map(&a).should == [3]

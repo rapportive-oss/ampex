@@ -1,10 +1,22 @@
-require 'blankslate'
-
 # Copyright 2010 Conrad Irwin <conrad.irwin@gmail.com> MIT License
 #
 # For detailed usage notes, please see README.markdown
-#
-class Metavariable < BlankSlate
+
+# NOTE: Ruby 1.9 seems to provide a default blank slate that isn't
+# very blank, luckily it also provides a BasicObject which is pretty
+# basic.
+if defined? BasicObject
+  superclass = BasicObject
+else
+  require 'rubygems'
+  require 'blankslate'
+  superclass = BlankSlate
+end
+
+class Metavariable < superclass
+  # Take a local copy of these as constant lookup is destroyed by BasicObject.
+  Metavariable = self
+  Thread = ::Thread
 
   # When you pass an argument with & in ruby, you're actually calling #to_proc
   # on the object. So it's Symbol#to_proc that makes the &:to_s trick work,
@@ -12,7 +24,7 @@ class Metavariable < BlankSlate
   attr_reader :to_proc
 
   def initialize(&block)
-    @to_proc = block || lambda{|x| x}
+    @to_proc = block || ::Proc.new{|x| x}
   end
 
   # Each time a method is called on a Metavariable, we want to create a new
@@ -30,6 +42,12 @@ class Metavariable < BlankSlate
     mv = Metavariable.new { |x| @to_proc.call(x).send(name, *args, &block) }
     Metavariable.temporarily_monkeypatch(args.last, :to_proc) { mv.to_proc } if name.to_s =~ /[^!=<>]=$/
     mv
+  end
+
+  # BlankSlate and BasicObject have different sets of methods that you don't want.
+  # let's remove them all.
+  instance_methods.each do |method|
+    undef_method method unless %w(method_missing to_proc __send__ __id__).include? method.to_s
   end
 
   private
