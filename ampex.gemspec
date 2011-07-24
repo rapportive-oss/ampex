@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = "ampex"
-  s.version = "1.2.0"
+  s.version = "1.2.1"
   s.platform = Gem::Platform::RUBY
   s.author = "Conrad Irwin"
   s.email = "conrad.irwin@gmail.com"

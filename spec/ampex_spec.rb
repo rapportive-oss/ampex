@@ -107,4 +107,13 @@ describe "&X" do
     [].map(&1)
   end
 
+  it "should work in the face of an overridden #send" do
+    class A
+      def send; "Dear Aunty Mabel, I'm writing to you…"; end
+      def sign_off; "Yours relatedly, Cousin Sybil"; end
+    end
+
+    [A.new].map(&X.sign_off).should == ["Yours relatedly, Cousin Sybil"]
+  end
+
 end

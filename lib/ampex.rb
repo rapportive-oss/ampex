@@ -39,7 +39,7 @@ class Metavariable < superclass
   # }
   #
   def method_missing(name, *args, &block)
-    mv = Metavariable.new { |x| @to_proc.call(x).send(name, *args, &block) }
+    mv = Metavariable.new { |x| @to_proc.call(x).__send__(name, *args, &block) }
     Metavariable.temporarily_monkeypatch(args.last, :to_proc) { mv.to_proc } if name.to_s =~ /[^!=<>]=$/
     mv
   end
