@@ -1,4 +1,4 @@
-The Ampex (`&X`) library provides a Metavariable X that can be used in conjunction with the unary ampersand to create anonymous blocks in a slightly more readable way than the default. It was inspired by the clever `Symbol#to_proc` method which handles the most common case very elegantly, and discussion with Sam Stokes who created an earlier version.
+The Ampex (`&X`) library provides a Metavariable X that can be used in conjunction with the unary ampersand to create anonymous blocks in a slightly more readable way than the default. It was inspired by the clever `Symbol#to_proc` method which handles the most common case very elegantly, and discussion with Sam Stokes about creating lazy enumerators in ruby.
 
 Usage
 -----
@@ -67,7 +67,7 @@ Secondly, other arguments or operands will only be evaluated once, and not every
 Epilogue
 --------
 
-`&X` has been tested on MRI ruby 1.8.6, 1.8.7 and 1.9.2 and jruby 1.5.3. It is thread-safe.
+`&X` has been tested on MRI ruby 1.8.6, 1.8.7, 1.9.2, 1.9.3, jruby, and rubinius.
 
 For bug-fixes or enhancements, please contact the author: Conrad Irwin <conrad.irwin@gmail.com>
 
@@ -86,4 +86,7 @@ assigning of falsey values; and did not work on rubinius.
 See also
 --------
 
+* <https://cirw.in/blog/ampex> — a blog post that describes the ideas.
 * <https://github.com/danielribeiro/RubyUnderscore> — which uses an underscore in place of `&X` and works by rewriting the syntax tree.
+* <https://gist.github.com/1224361> — a patch for Rubinius that enables the underscore in a similar way.
+* <http://blog.railsware.com/2012/03/13/ruby-2-0-enumerablelazy/> — The upcoming lazy enumerable support for Ruby 2.0.
