@@ -86,7 +86,7 @@ assigning of falsey values; and did not work on rubinius.
 See also
 --------
 
-* <https://cirw.in/blog/ampex> — a blog post that describes the ideas.
+* <http://cirw.in/blog/ampex> — a blog post that describes the ideas.
 * <https://github.com/danielribeiro/RubyUnderscore> — which uses an underscore in place of `&X` and works by rewriting the syntax tree.
 * <https://gist.github.com/1224361> — a patch for Rubinius that enables the underscore in a similar way.
 * <http://blog.railsware.com/2012/03/13/ruby-2-0-enumerablelazy/> — The upcoming lazy enumerable support for Ruby 2.0.
