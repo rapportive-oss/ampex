@@ -87,6 +87,7 @@ See also
 --------
 
 * <http://cirw.in/blog/ampex> — a blog post that describes the ideas.
+* <https://github.com/raganwald/homoiconic/blob/master/2012/05/anaphora.md#anaphora-in-ruby-2012-edition> — a detailed overview of all similar libraries available for Ruby.
 * <https://github.com/danielribeiro/RubyUnderscore> — which uses an underscore in place of `&X` and works by rewriting the syntax tree.
 * <https://gist.github.com/1224361> — a patch for Rubinius that enables the underscore in a similar way.
 * <http://blog.railsware.com/2012/03/13/ruby-2-0-enumerablelazy/> — The upcoming lazy enumerable support for Ruby 2.0.
