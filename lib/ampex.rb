@@ -23,6 +23,17 @@ class Metavariable < superclass
     @to_proc = block || ::Proc.new{|x| x}
   end
 
+  # This method is here so that a metavariable can be used as a target for "when" like this:
+  #
+  #   case( foo )
+  #   when X.respond_to? :bar then "Responds to :bar"
+  #   when X.respond_to? :foobar then "Responds to :foobar"
+  #   end
+  #
+  def ===(y)
+    to_proc === y
+  end
+
   # Each time a method is called on a Metavariable, we want to create a new
   # Metavariable that is like the last but does something more.
   #
@@ -42,8 +53,11 @@ class Metavariable < superclass
   # BlankSlate and BasicObject have different sets of methods that you don't want.
   # let's remove them all.
   instance_methods.each do |method|
-    undef_method method unless %w(method_missing to_proc __send__ __id__).include? method.to_s
+    undef_method method unless %w(method_missing to_proc __send__ __id__ ===).include? method.to_s
   end
 end
 
 X = Metavariable.new
+class << X
+  undef ===
+end

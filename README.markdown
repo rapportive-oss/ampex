@@ -35,6 +35,13 @@ You can use this in any place a block is expected, for example to create a lambd
     normalizer.call :HelloWorld
       # => "helloworld"
 
+Last but definitly not least you can use this as a target for `when` like this
+
+    case( something )
+    when X.respond_to? :foo then "something responds to :foo"
+    when X.kind_of? Hash then "something is a Hash"
+    end
+
 Gotchas
 -------
 
@@ -63,6 +70,15 @@ Secondly, other arguments or operands will only be evaluated once, and not every
     i = 0
     [1, 2].map{ |x| x + (i += 1) }
       # => [2, 4]
+
+
+Thirdly, `#===` only works on `X` itself.
+
+    # Correct
+    [1,2,3].map(&X === 2) #=> [false, true, false]
+
+    # Wrong:
+    [1,2,3].map(&X.class === Fixnum) #! raises an exception
 
 Epilogue
 --------
