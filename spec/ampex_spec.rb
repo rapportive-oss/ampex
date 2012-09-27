@@ -56,16 +56,6 @@ describe "&X" do
   end
 
   it "should be a valid target for when" do
-
     (X.kind_of?(Numeric) === "String").should be_false
-
   end
-
-  it "should not override X#===" do
-
-    [1,2,3].map(&X === 2).should == [false, true, false]
-
-  end
-
-
 end

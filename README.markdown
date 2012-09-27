@@ -73,15 +73,6 @@ Secondly, other arguments or operands will only be evaluated once, and not every
     [1, 2].map{ |x| x + (i += 1) }
       # => [2, 4]
 
-
-Thirdly, `#===` only works on `X` itself.
-
-    # Correct
-    [1,2,3].map(&X === 2) #=> [false, true, false]
-
-    # Wrong:
-    [1,2,3].map(&X.class === Fixnum) #! raises an exception
-
 Epilogue
 --------
 

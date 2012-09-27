@@ -60,6 +60,3 @@ class Metavariable < superclass
 end
 
 X = Metavariable.new
-class << X
-  undef ===
-end
