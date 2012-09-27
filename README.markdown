@@ -35,7 +35,7 @@ You can use this in any place a block is expected, for example to create a lambd
     normalizer.call :HelloWorld
       # => "helloworld"
 
-Last but definitly not least you can use this as a target for `when` like this
+Last but definitly not least you can use ampex in a case clause:
 
     case something
     when X.respond_to? :foo
@@ -91,6 +91,9 @@ Backwards compatibility breakages
 Between version 1.2.1 and version 2.0.0, the support for assignment operations was removed from
 ampex. These had a very non-obvious implementation, and it was impossible to support
 assigning of falsey values; and did not work on rubinius.
+
+Between version 2.0.0 and 3.0.0 Metavariable#=== was implemented to provide case statement
+support. This will break code that was expecting `&(X === foo)` to work.
 
 See also
 --------
