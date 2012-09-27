@@ -25,9 +25,11 @@ class Metavariable < superclass
 
   # This method is here so that a metavariable can be used as a target for "when" like this:
   #
-  #   case( foo )
-  #   when X.respond_to? :bar then "Responds to :bar"
-  #   when X.respond_to? :foobar then "Responds to :foobar"
+  #   case foo
+  #   when X.respond_to? :bar
+  #     "Responds to :bar"
+  #   when X.respond_to? :foobar
+  #     "Responds to :foobar"
   #   end
   #
   def ===(y)

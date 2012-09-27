@@ -37,9 +37,11 @@ You can use this in any place a block is expected, for example to create a lambd
 
 Last but definitly not least you can use this as a target for `when` like this
 
-    case( something )
-    when X.respond_to? :foo then "something responds to :foo"
-    when X.kind_of? Hash then "something is a Hash"
+    case something
+    when X.respond_to? :foo
+      something.foo
+    when X.respond_to? :[]
+      something['foo']
     end
 
 Gotchas
