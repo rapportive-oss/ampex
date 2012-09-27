@@ -33,7 +33,7 @@ class Metavariable < superclass
   #   end
   #
   def ===(y)
-    to_proc === y
+    !!to_proc.call(y)
   end
 
   # Each time a method is called on a Metavariable, we want to create a new

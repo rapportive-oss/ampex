@@ -58,4 +58,8 @@ describe "&X" do
   it "should be a valid target for when" do
     (X.kind_of?(Numeric) === "String").should be_false
   end
+
+  it "should have a sane ===" do
+    (X.kind_of?(Numeric) === 4).should be_true
+  end
 end
